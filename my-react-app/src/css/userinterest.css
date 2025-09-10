@@ -1,0 +1,121 @@
+/* Container */
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Start from below header */
+  min-height: calc(100vh - 70px); /* Full height minus header */
+  padding: 30px 20px;
+  margin-top: 70px; /* Push below header */
+}
+
+/* Card */
+.form-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Titles */
+.form-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.form-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Input fields */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.3);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Checkbox group */
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns for alignment */
+  gap: 10px 20px;
+  margin-top: 8px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.checkbox-group input[type="checkbox"] {
+  transform: scale(1.2);
+  accent-color: #10b981; /* Nice green checkmark */
+}
+
+/* Submit button */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #10b981, #047857);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #059669, #065f46);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .form-card {
+    padding: 20px;
+  }
+  .checkbox-group {
+    grid-template-columns: 1fr; /* Stack checkboxes on small screens */
+  }
+}
