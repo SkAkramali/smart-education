@@ -1,48 +1,38 @@
-import "./css/userinterest.css"
 import { useState } from "react";
-import { db } from "./firebase"; // ✅ import Firestore instance
-import { collection, addDoc } from "firebase/firestore";
+import { db } from "./firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import "./css/userinterest.css"; // ✅ Import your CSS file
 
-const UserRecommendations = () => {
-  // State variables
+const StudentForm = () => {
   const [name, setName] = useState("");
-  const [education, setEducation] = useState("");
-  const [hobbies, setHobbies] = useState([]);
+  const [currentEducation, setCurrentEducation] = useState("");
+  const [interests, setInterests] = useState([]);
   const [other, setOther] = useState("");
 
-  // ✅ handle checkbox
-  const handleCheckboxChange = (event) => {
-    const value = event.target.value;
-    if (hobbies.includes(value)) {
-      setHobbies(hobbies.filter((hobby) => hobby !== value));
-    } else {
-      setHobbies([...hobbies, value]);
-    }
+  const handleCheckbox = (e) => {
+    const { value, checked } = e.target;
+    setInterests(
+      checked ? [...interests, value] : interests.filter((i) => i !== value)
+    );
   };
 
-  // ✅ submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      await addDoc(collection(db, "student_interests"), {
-        fullName: name,
-        educationStatus: education,
-        hobbies: hobbies,
-        otherInterests: other,
-        createdAt: new Date()
+      await addDoc(collection(db, "students"), {
+        name,
+        currentEducation,
+        interests,
+        other,
+        createdAt: serverTimestamp(),
       });
-      alert("Data saved successfully! 🎉");
-
-      // Reset form
+      alert("✅ Student data saved!");
       setName("");
-      setEducation("");
-      setHobbies([]);
+      setCurrentEducation("");
+      setInterests([]);
       setOther("");
-
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Error saving data. Try again!");
+      console.error("❌ Error adding document: ", error);
     }
   };
 
@@ -50,17 +40,15 @@ const UserRecommendations = () => {
     <div className="form-container">
       <div className="form-card">
         <h2 className="form-title">Student Information</h2>
-        <p className="form-subtitle">
-          Please fill in your details and select your interests
-        </p>
+        <p className="form-subtitle">Fill in your details below</p>
 
-        <form className="student-form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           {/* Name */}
           <div className="form-group">
-            <label>Full Name</label>
-            <input 
-              type="text" 
-              placeholder="Enter your name" 
+            <label>Name</label>
+            <input
+              type="text"
+              placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -69,50 +57,74 @@ const UserRecommendations = () => {
 
           {/* Current Education */}
           <div className="form-group">
-            <label>Current Education Status</label>
-            <select 
-              value={education} 
-              onChange={(e) => setEducation(e.target.value)}
+            <label>Current Education</label>
+            <select
+              value={currentEducation}
+              onChange={(e) => setCurrentEducation(e.target.value)}
               required
             >
-              <option value="">Select your class</option>
-              <option>10th Class</option>
-              <option>11th Class</option>
-              <option>12th Class</option>
-              <option>Undergraduate</option>
-              <option>Other</option>
+              <option value="">Select Class</option>
+              <option value="10th Class">Schooling</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Degree">under Garduate</option>
+              <option value="Post Graduation">Post Graduation</option>
             </select>
           </div>
 
-          {/* Hobbies & Interests */}
+          {/* Interests */}
           <div className="form-group">
-            <label>Hobbies & Interests</label>
+            <label>Interests</label>
             <div className="checkbox-group">
-              {["Sports", "Reading", "Coding", "Music", "Drawing", "Traveling"].map((hobby) => (
-                <label key={hobby}>
-                  <input
-                    type="checkbox"
-                    value={hobby}
-                    checked={hobbies.includes(hobby)}
-                    onChange={handleCheckboxChange}
-                  />{" "}
-                  {hobby}
-                </label>
-              ))}
+              <label>
+                <input
+                  type="checkbox"
+                  value="Sports"
+                  checked={interests.includes("Sports")}
+                  onChange={handleCheckbox}
+                />
+                Sports
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  value="Coding"
+                  checked={interests.includes("Coding")}
+                  onChange={handleCheckbox}
+                />
+                Coding
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  value="Reading"
+                  checked={interests.includes("Reading")}
+                  onChange={handleCheckbox}
+                />
+                Reading
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  value="Drawing"
+                  checked={interests.includes("Drawing")}
+                  onChange={handleCheckbox}
+                />
+                Drawing
+              </label>
             </div>
           </div>
 
-          {/* Other Interests */}
+          {/* Other */}
           <div className="form-group">
-            <label>Other (if any)</label>
-            <textarea 
-              placeholder="Write your other interests here..."
+            <label>Other Interests</label>
+            <textarea
+              placeholder="E.g. Photography, Music..."
               value={other}
               onChange={(e) => setOther(e.target.value)}
             ></textarea>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button type="submit" className="submit-btn">
             Submit
           </button>
@@ -122,4 +134,4 @@ const UserRecommendations = () => {
   );
 };
 
-export default UserRecommendations;
+export default StudentForm;
