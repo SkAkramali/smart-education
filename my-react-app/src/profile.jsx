@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import "./css/profile.css";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,6 +33,15 @@ const ProfilePage = () => {
     fetchUserData();
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigate("/signin"); // redirect to signin after logout
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   if (!userData) return <p>Loading profile...</p>;
 
   return (
@@ -46,6 +58,11 @@ const ProfilePage = () => {
         {userData.interests && userData.interests.length > 0 && (
           <p><strong>Interests:</strong> {userData.interests.join(", ")}</p>
         )}
+
+        {/* ✅ Sign Out Button */}
+        <button className="signout-btn" onClick={handleSignOut}>
+          Sign Out
+        </button>
       </div>
     </div>
   );

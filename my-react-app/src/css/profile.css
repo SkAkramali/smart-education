@@ -35,3 +35,34 @@
   margin: 5px 0;
   color: #555;
 }
+
+.signout-btn {
+  margin-top: 20px;
+  padding: 10px 18px;
+  background-color: #e63946;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.signout-btn:hover {
+  background-color: #c62828;
+}
+.signout-btn {
+  margin-top: 20px;
+  padding: 10px 18px;
+  background-color: #e63946;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.signout-btn:hover {
+  background-color: #c62828;
+}
