@@ -1,0 +1,18 @@
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 2px solid #fff;
+}
+
+.user-avatar.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4cafef;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}

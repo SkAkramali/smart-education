@@ -1,26 +1,43 @@
-import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase";
+// src/Recommendations.jsx
+import { useState, useEffect } from "react";
+import { auth } from "./firebase";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
-const CareerResult = ({ studentId }) => {
-  const [recommendation, setRecommendation] = useState("⏳ Waiting...");
+function Recommendations() {
+  const [recommendations, setRecommendations] = useState("Generating...");
 
   useEffect(() => {
-    if (!studentId) return;
-    const unsub = onSnapshot(doc(db, "students", studentId), (docSnap) => {
-      if (docSnap.exists()) {
-        setRecommendation(docSnap.data().recommendation || "⏳ Generating...");
+    const fetchAIRecommendations = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        setRecommendations("Please login to see recommendations.");
+        return;
       }
-    });
-    return () => unsub();
-  }, [studentId]);
+
+      const functions = getFunctions();
+      const generateCareerRecommendation = httpsCallable(
+        functions,
+        "generateCareerRecommendation"
+      );
+
+      try {
+        const result = await generateCareerRecommendation();
+        setRecommendations(result.data.recommendations);
+      } catch (error) {
+        console.error("Error:", error);
+        setRecommendations("Failed to fetch recommendations.");
+      }
+    };
+
+    fetchAIRecommendations();
+  }, []);
 
   return (
-    <div className="result-box">
-      <h3>Career Recommendation</h3>
-      <p>{recommendation}</p>
+    <div>
+      <h3>Your Career Recommendations</h3>
+      <pre>{recommendations}</pre>
     </div>
   );
-};
+}
 
-export default CareerResult;
+export default Recommendations;

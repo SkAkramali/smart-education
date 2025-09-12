@@ -1,0 +1,48 @@
+.App-header {
+  display: flex;
+  justify-content: space-between; /* Push text left & avatar/menu right */
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #282c34;
+  color: white;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.user-avatar.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4cafef;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
