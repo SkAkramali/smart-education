@@ -3,104 +3,109 @@ import { auth, db } from "./firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-// --- Course Roadmap Templates ---
-const courseRoadmapTemplates = {
-  "B.A.": {
-    industries: ["Education", "Journalism", "Public Sector", "NGOs"],
-    govtExams: ["UPSC Civil Services", "SSC", "State PSC"],
-    privateJobs: ["Content Writer", "HR Executive", "Marketing Executive"],
-    entrepreneurship: ["Consultancy", "Content Creation", "NGO Setup"],
-    higherEducation: ["M.A.", "MBA", "Journalism Studies", "Law (LLB)"],
+// Questionnaire
+const questions = [
+  {
+    id: "interest",
+    question: "Which area are you most interested in?",
+    options: [
+      { label: "Arts & Humanities", value: "B.A." },
+      { label: "Science & Research", value: "B.Sc." },
+      { label: "Commerce & Finance", value: "B.Com." },
+      { label: "Business & Management", value: "BBA" },
+      { label: "Technology & Engineering", value: "B.Tech" },
+      { label: "Computer Applications", value: "BCA" },
+      { label: "Finance & Accounting", value: "BAF" },
+      { label: "Management Studies", value: "BMS" },
+    ],
   },
-  "B.Sc.": {
-    industries: ["Research", "Healthcare", "IT", "Laboratories"],
-    govtExams: ["UPSC/State Exams", "ISRO/DRDO Jobs", "Banking Exams"],
-    privateJobs: ["Lab Technician", "Data Analyst", "Software Developer"],
-    entrepreneurship: ["Lab Services", "EdTech Startup", "Healthcare Services"],
-    higherEducation: ["M.Sc.", "M.Tech.", "MBA", "PhD"],
+  {
+    id: "education",
+    question: "What is your current education level?",
+    options: [
+      { label: "High School (10+2)", value: "High School" },
+      { label: "Diploma", value: "Diploma" },
+      { label: "Undergraduate", value: "Undergraduate" },
+    ],
   },
-  "B.Com.": {
-    industries: ["Finance", "Banking", "Accounting", "Taxation"],
-    govtExams: ["CA", "CMA", "Bank PO Exams", "SSC Finance Posts"],
-    privateJobs: ["Accountant", "Financial Analyst", "Auditor"],
-    entrepreneurship: ["Accounting Firm", "Financial Consultancy"],
-    higherEducation: ["M.Com.", "MBA Finance", "CA", "CFA"],
+  {
+    id: "strengths",
+    question: "Which of these best describes your strengths?",
+    options: [
+      { label: "Analytical & Logical Thinking", value: "Analytical" },
+      { label: "Creativity & Writing", value: "Creative" },
+      { label: "Leadership & Management", value: "Leadership" },
+      { label: "Numbers & Finance", value: "Finance" },
+      { label: "Technical & Coding", value: "Technical" },
+    ],
   },
-  "BBA": {
-    industries: ["Management", "Business Analytics", "Marketing", "HR"],
-    govtExams: ["Banking Exams", "SSC", "UPSC (Management Trainee)"],
-    privateJobs: ["Business Analyst", "Marketing Executive", "HR Coordinator"],
-    entrepreneurship: ["Startup Founder", "Consultancy", "Digital Marketing"],
-    higherEducation: ["MBA", "PGDM", "Certification Courses"],
+  {
+    id: "goal",
+    question: "What is your main goal after graduation?",
+    options: [
+      { label: "Secure a Government Job", value: "Government" },
+      { label: "Work in Private Sector", value: "Private" },
+      { label: "Start My Own Business", value: "Startup" },
+      { label: "Pursue Higher Studies", value: "Higher Studies" },
+      { label: "Work in Tech/Innovation", value: "Tech" },
+    ],
   },
-};
+];
 
-// --- Roadmap Generator ---
-const generateCourseRoadmap = (name, degree) => {
-  const template = courseRoadmapTemplates[degree];
-
-  if (!template) {
-    return `⚠️ No roadmap available for ${degree}`;
-  }
-
-  let roadmap = `🎓 Career Roadmap for ${name}\n`;
-  roadmap += `Current Degree: ${degree}\n\n`;
-
-  roadmap += `🏭 Industries: ${template.industries.join(", ")}\n`;
-  roadmap += `📝 Govt Exams: ${template.govtExams.join(", ")}\n`;
-  roadmap += `💼 Private Jobs: ${template.privateJobs.join(", ")}\n`;
-  roadmap += `🚀 Entrepreneurship: ${template.entrepreneurship.join(", ")}\n`;
-  roadmap += `📚 Higher Education: ${template.higherEducation.join(", ")}\n\n`;
-  roadmap += `✅ Next Steps:\n- Explore courses, internships, and competitions.\n- Join relevant communities and forums.\n- Build a portfolio or certifications based on your career goal.`;
-
-  return roadmap;
-};
-
-// --- Component ---
 function UserCourseInterest() {
-  const [degree, setDegree] = useState("");
+  const [answers, setAnswers] = useState({});
   const navigate = useNavigate();
+
+  const handleAnswer = (id, value) => {
+    setAnswers((prev) => ({ ...prev, [id]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
     if (!user) return alert("Please login first");
 
-    const roadmap = generateCourseRoadmap(user.displayName || "Student", degree);
+    try {
+      // Save answers to Firestore
+      await setDoc(doc(db, "StudentInterests", user.uid), {
+        uid: user.uid,
+        name: user.displayName || "Student",
+        email: user.email,
+        answers,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
-    // ✅ Save in Firestore
-    await setDoc(doc(db, "StudentInterests", user.uid), {
-      uid: user.uid,
-      name: user.displayName || "Student",
-      email: user.email,
-      degree,
-      roadmap,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    navigate("/dashboard");
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error saving student interests:", error);
+      alert("Failed to save your answers. Please try again.");
+    }
   };
 
   return (
     <div className="form-container">
       <form className="form-card" onSubmit={handleSubmit}>
-        <h2>Tell Us About Your Course</h2>
-
-        <label>Current Degree</label>
-        <select
-          value={degree}
-          onChange={(e) => setDegree(e.target.value)}
-          required
-        >
-          <option value="">Select your degree</option>
-          <option value="B.A.">B.A.</option>
-          <option value="B.Sc.">B.Sc.</option>
-          <option value="B.Com.">B.Com.</option>
-          <option value="BBA">BBA</option>
-        </select>
-
-        <button type="submit">Generate Roadmap</button>
+        <h2>Tell Us About Your Interests</h2>
+        {questions.map((q) => (
+          <div key={q.id} className="question-block">
+            <label>{q.question}</label>
+            <select
+              value={answers[q.id] || ""}
+              onChange={(e) => handleAnswer(q.id, e.target.value)}
+              required
+            >
+              <option value="">Select an option</option>
+              {q.options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
+        <button type="submit">Save & Go to Dashboard</button>
       </form>
     </div>
   );

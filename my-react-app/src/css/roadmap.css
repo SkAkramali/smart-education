@@ -1,0 +1,59 @@
+/* =========================
+   Roadmap Page Styles
+   ========================= */
+.roadmap-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.roadmap-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* Roadmap text */
+.roadmap-container pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 1.2rem; /* bigger text */
+  line-height: 1.8;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #2d3748;
+}
+
+/* Headings inside pre */
+.roadmap-container pre::first-line {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .roadmap-container {
+    padding: 16px;
+    margin: 20px;
+  }
+  .roadmap-container pre {
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .roadmap-container {
+    padding: 12px;
+    margin: 12px;
+    border-radius: 12px;
+  }
+  .roadmap-container pre {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
