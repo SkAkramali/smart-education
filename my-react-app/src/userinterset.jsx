@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { auth, db } from "./firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import "./css/userInterest.css";
 
-// Questionnaire
+// Extended Questionnaire (10 Questions)
 const questions = [
   {
     id: "interest",
@@ -50,6 +51,66 @@ const questions = [
       { label: "Work in Tech/Innovation", value: "Tech" },
     ],
   },
+  {
+    id: "workstyle",
+    question: "What work environment suits you best?",
+    options: [
+      { label: "Corporate Office", value: "Corporate" },
+      { label: "Startup & Innovation", value: "Startup" },
+      { label: "Research & Labs", value: "Research" },
+      { label: "Creative Fields", value: "Creative" },
+      { label: "Field/Outdoor Work", value: "Outdoor" },
+    ],
+  },
+  {
+    id: "location",
+    question: "Where do you prefer to work?",
+    options: [
+      { label: "India (Domestic)", value: "India" },
+      { label: "Abroad", value: "Abroad" },
+      { label: "No Preference", value: "Any" },
+    ],
+  },
+  {
+    id: "salary",
+    question: "What is your expected salary range initially?",
+    options: [
+      { label: "2-4 LPA", value: "Low" },
+      { label: "4-8 LPA", value: "Mid" },
+      { label: "8+ LPA", value: "High" },
+    ],
+  },
+  {
+    id: "skills",
+    question: "Which additional skills do you want to build?",
+    options: [
+      { label: "Communication & Public Speaking", value: "Communication" },
+      { label: "Data Analysis", value: "Data" },
+      { label: "Programming & Development", value: "Coding" },
+      { label: "Finance & Accounting", value: "Finance" },
+      { label: "Management & Leadership", value: "Management" },
+    ],
+  },
+  {
+    id: "higherStudies",
+    question: "Do you plan to pursue higher studies?",
+    options: [
+      { label: "Yes, in India", value: "India" },
+      { label: "Yes, Abroad", value: "Abroad" },
+      { label: "Not Sure Yet", value: "Maybe" },
+      { label: "No", value: "No" },
+    ],
+  },
+  {
+    id: "learningStyle",
+    question: "How do you prefer to learn?",
+    options: [
+      { label: "Practical / Hands-On", value: "Practical" },
+      { label: "Theoretical / Research", value: "Research" },
+      { label: "Online Courses & Self-learning", value: "Online" },
+      { label: "Traditional Classroom", value: "Classroom" },
+    ],
+  },
 ];
 
 function UserCourseInterest() {
@@ -66,17 +127,21 @@ function UserCourseInterest() {
     if (!user) return alert("Please login first");
 
     try {
-      // Save answers to Firestore
-      await setDoc(doc(db, "StudentInterests", user.uid), {
-        uid: user.uid,
-        name: user.displayName || "Student",
-        email: user.email,
-        answers,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      // ✅ Save answers to Firestore in StudentInterests collection
+      await setDoc(
+        doc(db, "StudentInterests", user.uid),
+        {
+          uid: user.uid,
+          name: user.displayName || "Student",
+          email: user.email,
+          answers,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
 
-      // Redirect to dashboard
+      // ✅ Navigate to dashboard (or roadmap)
       navigate("/dashboard");
     } catch (error) {
       console.error("Error saving student interests:", error);

@@ -23,8 +23,10 @@ const DashboardLayout = () => {
       {/* Header (always visible) */}
       <header className="App-header">
         <h1 className="logo">Dashboard</h1>
-
+          
         <div className="header-right">
+          <NavLink to="/dashboard/roadmap" className="rodemap">Roadmap</NavLink>
+
           {user && (
             <img
               src={
@@ -37,7 +39,6 @@ const DashboardLayout = () => {
             />
           )}
 
-          <NavLink to="/dashboard/roadmap" className="nav-link">roadmap</NavLink>
 
           <button
             className={`menu-btn ${menuOpen ? "active" : ""}`}
