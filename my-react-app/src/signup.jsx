@@ -1,62 +1,73 @@
+// src/SignupForm.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";  // ✅ Import
+import { useNavigate } from "react-router-dom";
 import { auth, db } from "./firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "./css/signup.css";
+
+// Default profile image
+const DEFAULT_AVATAR =
+  "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [profilePic, setProfilePic] = useState(null);
+  const [photo, setPhoto] = useState(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const navigate = useNavigate();  // ✅ initialize navigate
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
+    setLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Create auth user
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
-      // Default profile picture URL
-      let photoURL =
-        "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // default avatar
+      // If no photo uploaded, use default
+      const photoURL = photo
+        ? URL.createObjectURL(photo) // preview URL (optional; better to upload to storage later)
+        : DEFAULT_AVATAR;
 
-      // If user uploaded a profile pic
-      if (profilePic) {
-        const storage = getStorage();
-        const storageRef = ref(storage, `profilePics/${user.uid}`);
-        await uploadBytes(storageRef, profilePic);
-        photoURL = await getDownloadURL(storageRef);
-      }
+      await updateProfile(user, { displayName: name, photoURL });
 
-      // Update Firebase Auth profile
-      await updateProfile(user, {
-        displayName: name,
-        photoURL: photoURL,
-      });
-
-      // Save user details in Firestore
-      await setDoc(doc(db, "Students", user.uid), {
+      // Save student info in Firestore (StudentDetails collection)
+      await setDoc(doc(db, "StudentDetails", user.uid), {
         name,
         email,
         photoURL,
+        educationLevel: "", // placeholder
+        sportsInterests: [], // placeholder
+        interests: [],
+        roadmap: "",
         createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
-      setSuccess("Signup successful! 🎉");
-
-      // ✅ Redirect user to /userInterest
-      navigate("/userInterest");
-
+      navigate("/userInterest"); // go to interest form
     } catch (err) {
-      setError(err.message);
+      if (err.code === "auth/email-already-in-use") {
+        setError("This email is already registered.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters.");
+      } else {
+        setError("Signup failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,14 +75,11 @@ function SignupForm() {
     <div className="form-container">
       <form className="form-card" onSubmit={handleSignup}>
         <h2>Create Account</h2>
-
         {error && <p className="error">{error}</p>}
-        {success && <p className="success">{success}</p>}
 
         <label>Name</label>
         <input
           type="text"
-          placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -80,7 +88,6 @@ function SignupForm() {
         <label>Email</label>
         <input
           type="email"
-          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -89,20 +96,21 @@ function SignupForm() {
         <label>Password</label>
         <input
           type="password"
-          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
 
-        <label>Profile Picture</label>
+        <label>Profile Image (optional)</label>
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setProfilePic(e.target.files[0])}
+          onChange={(e) => setPhoto(e.target.files[0])}
         />
 
-        <button type="submit">Sign Up</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Signing Up..." : "Sign Up"}
+        </button>
       </form>
     </div>
   );

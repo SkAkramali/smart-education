@@ -1,48 +1,83 @@
-.App-header {
+/* Container */
+.form-container {
   display: flex;
-  justify-content: space-between; /* Push text left & avatar/menu right */
+  justify-content: center;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #282c34;
-  color: white;
+  min-height: calc(100vh - 70px); /* full screen minus header */
+  background-color: #f4f6f9;
+  padding: 20px;
 }
 
-.logo {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.header-right {
+/* Card */
+.form-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 15px;
 }
 
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
+/* Title */
+.form-card h2 {
+  text-align: center;
+  font-size: 24px;
+  color: #282c34; /* matches header */
+  margin-bottom: 15px;
 }
 
-.user-avatar.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #4cafef;
+/* Labels */
+.form-card label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: block;
+  color: #333;
+}
+
+/* Inputs */
+.form-card input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-card input:focus {
+  border-color: #4cafef; /* same as avatar placeholder */
+}
+
+/* Button */
+.form-card button {
+  background-color: #282c34; /* header color */
   color: white;
+  font-size: 16px;
   font-weight: bold;
-  font-size: 18px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.menu-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
+.form-card button:hover {
+  background-color: #3b3f47; /* slightly lighter */
+}
+
+/* Messages */
+.error {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.success {
+  color: green;
+  font-size: 14px;
+  text-align: center;
 }
