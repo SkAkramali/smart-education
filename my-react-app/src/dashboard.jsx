@@ -1,73 +1,66 @@
-// src/dashboard.jsx
-import { useEffect, useState } from "react";
-import { auth, db } from "./firebase";
-import { doc, onSnapshot } from "firebase/firestore";
+// src/DashboardLayout.jsx
+import { useState, useEffect } from "react";
+import { auth } from "./firebase";
+import { useNavigate, Outlet} from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import "./css/dashboard.css";
 
-function Dashboard() {
-  const [student, setStudent] = useState(null);
-  const [loading, setLoading] = useState(true);
+const DashboardLayout = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
 
-    // Listen to the student document in Firestore
-    const unsub = onSnapshot(
-      doc(db, "Students", user.uid),
-      (docSnap) => {
-        if (docSnap.exists()) {
-          setStudent(docSnap.data());
-        } else {
-          setStudent(null);
-        }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching student data:", error);
-        setLoading(false);
-      }
-    );
-
-    return () => unsub();
+    return () => unsubscribe();
   }, []);
 
-  if (loading) return <p>Loading dashboard...</p>;
-  if (!student) return <p>No student data found.</p>;
-
   return (
-    <div className="dashboard-container p-6 max-w-3xl mx-auto">
-      {/* Student Info Card */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h1 className="text-2xl font-bold mb-2">Welcome, {student.name}!</h1>
-        {student.interests && student.interests.length > 0 ? (
-          <p className="text-gray-700 mb-2">
-            Your selected interests: {student.interests.join(", ")}
-          </p>
-        ) : (
-          <p className="text-gray-500 mb-2">
-            You haven’t added any interests yet.
-          </p>
-        )}
-      </div>
+    <>
+      {/* Header (always visible) */}
+      <header className="App-header">
+        <h1 className="logo">Dashboard</h1>
 
-      {/* Career Roadmap Card */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold mb-3">Your Career Roadmap</h2>
-        {student.roadmap ? (
-          <pre className="whitespace-pre-wrap text-gray-800">
-            {student.roadmap}
-          </pre>
-        ) : (
-          <p className="text-gray-500">
-            Roadmap will appear after you submit your interests.
-          </p>
-        )}
-      </div>
-    </div>
+        <div className="header-right">
+          {user && (
+            <img
+              src={
+                user.photoURL ||
+                "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              }
+              alt="User Avatar"
+              className="user-avatar"
+              onClick={() => navigate("/dashboard/profile")}
+            />
+          )}
+
+          <NavLink to="/dashboard/roadmap" className="nav-link">roadmap</NavLink>
+
+          <button
+            className={`menu-btn ${menuOpen ? "active" : ""}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            ☰
+          </button>
+
+          {menuOpen && (
+            <div className="dropdown-menu">
+              <p onClick={() => navigate("/dashboard/roadmap")}>Roadmap</p>
+              <p onClick={() => navigate("/dashboard/profile")}>Profile</p>
+              <p onClick={() => auth.signOut()}>Logout</p>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <main className="dashboard-content">
+        <Outlet />
+      </main>
+    </>
   );
-}
+};
 
-export default Dashboard;
+export default DashboardLayout;

@@ -1,12 +1,12 @@
 // src/SignupForm.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { auth, db } from "./firebase";
 import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom"; // ✅ Added for navigation
 import "./css/signup.css";
 
 // Default profile image
@@ -21,7 +21,7 @@ function SignupForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // ✅ Init navigation
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ function SignupForm() {
     setLoading(true);
 
     try {
-      // Create auth user
+      // Create Firebase auth user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -37,27 +37,28 @@ function SignupForm() {
       );
       const user = userCredential.user;
 
-      // If no photo uploaded, use default
+      // Handle profile photo (preview URL for now)
       const photoURL = photo
-        ? URL.createObjectURL(photo) // preview URL (optional; better to upload to storage later)
+        ? URL.createObjectURL(photo)
         : DEFAULT_AVATAR;
 
       await updateProfile(user, { displayName: name, photoURL });
 
-      // Save student info in Firestore (StudentDetails collection)
+      // Save student details in Firestore
       await setDoc(doc(db, "StudentDetails", user.uid), {
         name,
         email,
         photoURL,
-        educationLevel: "", // placeholder
-        sportsInterests: [], // placeholder
-        interests: [],
+        educationLevel: "",
+        sportsInterests: [],
+        interests: [], // initially empty
         roadmap: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       });
 
-      navigate("/userInterest"); // go to interest form
+      // ✅ Redirect new user to interests page
+      navigate("/userInterest");
     } catch (err) {
       if (err.code === "auth/email-already-in-use") {
         setError("This email is already registered.");

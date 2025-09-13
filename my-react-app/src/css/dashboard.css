@@ -1,107 +1,81 @@
-/* Container */
-.dashboard-container {
+/* ==============================
+   Header Layout
+   ============================== */
+.App-header {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #1e1e2f;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* Cards */
-.dashboard-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dashboard-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-/* Heading */
-.dashboard-card h1,
-.dashboard-card h2 {
-  margin-bottom: 10px;
+/* ==============================
+   Logo
+   ============================== */
+.logo {
+  font-size: 20px;
   font-weight: bold;
-  color: #333;
 }
 
-.dashboard-card h1 {
-  font-size: 1.8rem;
+/* ==============================
+   Right Side (Avatar + Menu)
+   ============================== */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.dashboard-card h2 {
-  font-size: 1.4rem;
+/* User avatar */
+.user-avatar {
+  width: 40px;      /* ✅ Fix oversize image */
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
 }
 
-/* Text */
-.dashboard-card p {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.5;
+/* Menu Button */
+.menu-btn {
+  font-size: 22px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: white;
 }
 
-/* Roadmap Section */
-.roadmap-content {
-  background: #f8f9fa;
-  padding: 15px;
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: white;
+  color: black;
+  padding: 10px;
   border-radius: 8px;
-  font-family: "Courier New", monospace;
-  font-size: 0.95rem;
-  color: #222;
-  white-space: pre-wrap;
-  overflow-x: auto;
-  max-height: 400px;
-  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: 15px;
-  }
-
-  .dashboard-card {
-    padding: 15px;
-  }
-
-  .dashboard-card h1 {
-    font-size: 1.5rem;
-  }
-
-  .dashboard-card h2 {
-    font-size: 1.2rem;
-  }
-
-  .dashboard-card p,
-  .roadmap-content {
-    font-size: 0.9rem;
-  }
+.dropdown-menu p {
+  margin: 0;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
-@media (max-width: 480px) {
-  .dashboard-container {
-    padding: 10px;
-  }
+.dropdown-menu p:hover {
+  background: #f0f0f0;
+}
 
-  .dashboard-card {
-    padding: 12px;
-  }
-
-  .dashboard-card h1 {
-    font-size: 1.3rem;
-  }
-
-  .dashboard-card h2 {
-    font-size: 1rem;
-  }
-
-  .dashboard-card p,
-  .roadmap-content {
-    font-size: 0.85rem;
-  }
+/* ==============================
+   Dashboard Content Area
+   ============================== */
+.dashboard-content {
+  padding: 20px;
+  min-height: calc(100vh - 60px); /* Fill remaining screen under header */
+  background: #f9f9f9;
 }

@@ -4,64 +4,97 @@ import "./App.css";
 import Sigin from "./signin.jsx";
 import { Header } from "./header.jsx";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
 import Welcompage from "./welcomepage.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Aboutus from "./about.jsx";
-import StudentForm from "./userinterset.jsx";
+import UserCourseInterest from "./userinterset.jsx";
 import SignupForm from "./signup.jsx";
-import Dashboard from "./dashboard.jsx";
+import DashboardLayout from "./dashboard.jsx";
 import ProfilePage from "./profile.jsx";
 import Roadmap from "./roadmap.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [needsInterest, setNeedsInterest] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser || null);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+
+        // ✅ Check Firestore if user has filled interests
+        const docRef = doc(db, "StudentDetails", currentUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setNeedsInterest(!data.interests || data.interests.length === 0);
+        } else {
+          setNeedsInterest(true); // brand new user
+        }
+      } else {
+        setUser(null);
+        setNeedsInterest(false);
+      }
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>; // prevent flicker while checking auth
+    return <p>Loading...</p>;
   }
 
   return (
     <>
-      <Header />
+      {/* Show Header only if user is NOT logged in */}
+      {!user && <Header />}
 
       <Routes>
-        {/* ✅ Home Route: Dashboard if logged in, Welcome if not */}
-        <Route path="/" element={user ?<Roadmap/>: <Welcompage />} />
+        {/* Home Route */}
+        <Route
+          path="/"
+          element={
+            user
+              ? needsInterest
+                ? <Navigate to="/userInterest" />
+                : <Navigate to="/dashboard" />
+              : <Welcompage />
+          }
+        />
 
         {/* Public Routes */}
-        <Route path="/signin" element={<Sigin />} />
-        <Route path="/signup" element={<SignupForm />} />
+        <Route
+          path="/signin"
+          element={user ? <Navigate to="/" /> : <Sigin />}
+        />
+        <Route
+          path="/signup"
+          element={user ? <Navigate to="/" /> : <SignupForm />}
+        />
         <Route path="/about" element={<Aboutus />} />
 
-        {/* Protected Routes */}
+        {/* Protected Dashboard Routes */}
         <Route
           path="/dashboard"
-          element={user ? <Dashboard /> : <Navigate to="/signin" />}
-        />
-        <Route
-          path="/profile"
-          element={user ? <ProfilePage /> : <Navigate to="/signin" />}
-        />
+          element={user ? <DashboardLayout /> : <Navigate to="/signin" />}
+        >
+          <Route index element={<div>Welcome to your Dashboard!</div>} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="roadmap" element={<Roadmap />} />
+        </Route>
+
+        {/* Interest Form Route */}
         <Route
           path="/userInterest"
-          element={user ? <StudentForm /> : <Navigate to="/signin" />}
-        />
-        <Route
-          path="/roadmap"
-          element={user ? <Roadmap /> : <Navigate to="/signin" />}
+          element={user ? <UserCourseInterest /> : <Navigate to="/signin" />}
         />
 
-        {/* Catch-all: Redirect unknown routes */}
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

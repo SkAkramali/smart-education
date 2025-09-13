@@ -1,4 +1,3 @@
-// src/roadmap.jsx
 import { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -17,7 +16,7 @@ function Roadmap() {
       }
 
       try {
-        const docRef = doc(db, "Students", user.uid);
+        const docRef = doc(db, "StudentInterests", user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
