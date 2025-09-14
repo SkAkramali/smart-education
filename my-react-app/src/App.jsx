@@ -15,6 +15,7 @@ import DashboardLayout from "./dashboard.jsx";
 import ProfilePage from "./profile.jsx";
 import Roadmap from "./roadmap.jsx";
 import CollegesList from "./colleges.jsx";
+import Footer from "./footer.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -98,6 +99,7 @@ function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <Footer />
     </>
   );
 }
