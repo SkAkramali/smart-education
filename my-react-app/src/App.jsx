@@ -14,6 +14,7 @@ import SignupForm from "./signup.jsx";
 import DashboardLayout from "./dashboard.jsx";
 import ProfilePage from "./profile.jsx";
 import Roadmap from "./roadmap.jsx";
+import CollegesList from "./colleges.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -93,7 +94,7 @@ function App() {
           path="/userInterest"
           element={user ? <UserCourseInterest /> : <Navigate to="/signin" />}
         />
-
+        <Route path="/colleges" element={user ? <CollegesList /> : <Navigate to="/signin" />} />
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

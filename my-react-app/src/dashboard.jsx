@@ -4,6 +4,7 @@ import { auth } from "./firebase";
 import { useNavigate, Outlet} from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import "./css/dashboard.css";
+import CollegesList from "./colleges.jsx";
 
 const DashboardLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,7 +27,7 @@ const DashboardLayout = () => {
           
         <div className="header-right">
           <NavLink to="/dashboard/roadmap" className="rodemap">Roadmap</NavLink>
-
+          <NavLink to="/colleges" className="colleges">Colleges</NavLink>
           {user && (
             <img
               src={

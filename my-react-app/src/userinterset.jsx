@@ -128,7 +128,7 @@ function UserCourseInterest() {
 
     try {
       // ✅ Save answers to Firestore in StudentInterests collection
-      await setDoc(
+      const a = await setDoc(
         doc(db, "StudentInterests", user.uid),
         {
           uid: user.uid,
@@ -139,6 +139,7 @@ function UserCourseInterest() {
           updatedAt: serverTimestamp(),
         },
         { merge: true }
+  
       );
 
       // ✅ Navigate to dashboard (or roadmap)
